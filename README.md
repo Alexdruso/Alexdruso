@@ -1,7 +1,7 @@
 ### Hello there!
 
-- 🌱 I’m currently learning how to create effective recommender systems
-- 🦦 Data is kind of my thing
+- 🧠 I’m currently learning how to create effective recommender systems
+- 👨‍💻 Data is kind of my thing
 
 <a href="https://github.com/Alexdruso/ing-sw-2020-Riva-Sanvito-Truong">
   <img align="center" src="https://github-readme-stats.vercel.app/api/pin/?username=Alexdruso&theme=vue&repo=ing-sw-2020-Riva-Sanvito-Truong" />
