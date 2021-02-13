@@ -4,7 +4,7 @@
 
 ## I am a Data Science MSc. Student  
 
-- 📚 I am currently learning everything about ML/AI and Recommender Systems 😅
+- 📚 I am currently learning everything about ML/AI and Recommender Systems.
 - 💪🏼 Future Goals: Become a PhD student in a top university.
 - ⚡ Fun fact: in high school I specialized in humanities.
 
