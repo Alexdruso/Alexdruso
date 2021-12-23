@@ -23,8 +23,8 @@
 ### Get in touch with me 📝
 
 [<img align="left" alt="bilgehangecici.site" height="30px" src="https://cdn-icons-png.flaticon.com/512/1006/1006771.png" />][website]
-[<img align="left" alt="bilgehangecici | LinkedIn" height="30px" src="https://cdn-icons.flaticon.com/png/512/3536/premium/3536505.png"/>][linkedin]
-[<img align="left" alt="bilgehangecici | Spotify" height="30px" src="https://www.flaticon.com/svg/static/icons/svg/725/725281.svg" />][Spotify]
+[<img align="left" alt="bilgehangecici | LinkedIn" height="30px" src="https://cdn-icons-png.flaticon.com/512/61/61109.png"/>][linkedin]
+[<img align="left" alt="bilgehangecici | Spotify" height="30px" src="https://cdn-icons-png.flaticon.com/512/174/174872.png" />][Spotify]
 
 <br />
 
