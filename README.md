@@ -76,7 +76,7 @@
 
 <br/>
 
-[website]: http://alessandrosanvito.me/
+[website]: https://alexdruso.github.io/
 [linkedin]: https://www.linkedin.com/in/alessandro-sanvito/
 [Spotify]: https://open.spotify.com/user/1174567610
 
