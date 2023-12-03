@@ -2,11 +2,11 @@
 
 <img align="right" alt="GIF" height="160px" src="https://media.giphy.com/media/du3J3cXyzhj75IOgvA/giphy.gif" />
 
-## I am a Data Science MSc. Student  
+## I am a Software Engineer 
 
-- 📚 I am currently learning everything about ML/AI and CV.
+- 📚 I am currently learning everything about data engineering.
 - 💪🏼 Future Goals: become a PhD student in a top university.
-- ⚡ Fun fact: in high school I specialized in humanities.
+- ⚡ Fun fact: in high school, I specialized in humanities.
 
 ---
 
