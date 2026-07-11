@@ -308,7 +308,7 @@ def svg_overwrite(filename, age_data, commit_data, star_data, repo_data, contrib
     justify_format(root, 'repo_data', repo_data, 6)
     justify_format(root, 'contrib_data', contrib_data)
     justify_format(root, 'follower_data', follower_data, 10)
-    justify_format(root, 'loc_data', loc_data[2], 9)
+    justify_format(root, 'loc_data', loc_data[2], 12)
     justify_format(root, 'loc_add', loc_data[0])
     justify_format(root, 'loc_del', loc_data[1], 7)
     tree.write(filename, encoding='utf-8', xml_declaration=True)
@@ -427,9 +427,7 @@ if __name__ == '__main__':
     user_data, user_time = perf_counter(user_getter, USER_NAME)
     OWNER_ID, acc_date = user_data
     formatter('account data', user_time)
-    # 'Uptime' counts from the GitHub account creation date; replace with a
-    # datetime.datetime(YYYY, M, D) birthday to display age instead
-    age_data, age_time = perf_counter(daily_readme, datetime.datetime.strptime(acc_date, '%Y-%m-%dT%H:%M:%SZ'))
+    age_data, age_time = perf_counter(daily_readme, datetime.datetime(1998, 10, 16))
     formatter('age calculation', age_time)
     total_loc, loc_time = perf_counter(loc_query, ['OWNER', 'COLLABORATOR', 'ORGANIZATION_MEMBER'], 7)
     formatter('LOC (cached)', loc_time) if total_loc[-1] else formatter('LOC (no cache)', loc_time)
