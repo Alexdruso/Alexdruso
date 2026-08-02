@@ -69,7 +69,7 @@ def graph_commits(start_date, end_date):
     return int(request.json()['data']['user']['contributionsCollection']['contributionCalendar']['totalContributions'])
 
 
-def graph_repos_stars(count_type, owner_affiliation, cursor=None):
+def graph_repos_stars(count_type, owner_affiliation, cursor=None, total_stars=0):
     """
     Uses GitHub's GraphQL v4 API to return my total repository or star count.
     """
@@ -98,11 +98,13 @@ def graph_repos_stars(count_type, owner_affiliation, cursor=None):
     }'''
     variables = {'owner_affiliation': owner_affiliation, 'login': USER_NAME, 'cursor': cursor}
     request = simple_request(graph_repos_stars.__name__, query, variables)
-    if request.status_code == 200:
-        if count_type == 'repos':
-            return request.json()['data']['user']['repositories']['totalCount']
-        elif count_type == 'stars':
-            return stars_counter(request.json()['data']['user']['repositories']['edges'])
+    repositories = request.json()['data']['user']['repositories']
+    if count_type == 'repos':
+        return repositories['totalCount']
+    total_stars += stars_counter(repositories['edges'])
+    if repositories['pageInfo']['hasNextPage']: # only 100 repositories are returned per page
+        return graph_repos_stars(count_type, owner_affiliation, repositories['pageInfo']['endCursor'], total_stars)
+    return total_stars
 
 
 def recursive_loc(owner, repo_name, data, cache_comment, addition_total=0, deletion_total=0, my_commits=0, cursor=None):
@@ -160,7 +162,8 @@ def loc_counter_one_repo(owner, repo_name, data, cache_comment, history, additio
     only adds the LOC value of commits authored by me
     """
     for node in history['edges']:
-        if node['node']['author']['user'] == OWNER_ID:
+        author = node['node']['author'] # commits made by a deleted or unlinked account have no author
+        if author is not None and author['user'] == OWNER_ID:
             my_commits += 1
             addition_total += node['node']['additions']
             deletion_total += node['node']['deletions']
@@ -207,11 +210,12 @@ def loc_query(owner_affiliation, comment_size=0, force_cache=False, cursor=None,
     }'''
     variables = {'owner_affiliation': owner_affiliation, 'login': USER_NAME, 'cursor': cursor}
     request = simple_request(loc_query.__name__, query, variables)
-    if request.json()['data']['user']['repositories']['pageInfo']['hasNextPage']:   # If repository data has another page
-        edges += request.json()['data']['user']['repositories']['edges']            # Add on to the LoC count
-        return loc_query(owner_affiliation, comment_size, force_cache, request.json()['data']['user']['repositories']['pageInfo']['endCursor'], edges)
+    repositories = request.json()['data']['user']['repositories']
+    if repositories['pageInfo']['hasNextPage']:                     # If repository data has another page
+        edges += accessible_edges(repositories['edges'])            # Add on to the LoC count
+        return loc_query(owner_affiliation, comment_size, force_cache, repositories['pageInfo']['endCursor'], edges)
     else:
-        return cache_builder(edges + request.json()['data']['user']['repositories']['edges'], comment_size, force_cache)
+        return cache_builder(edges + accessible_edges(repositories['edges']), comment_size, force_cache)
 
 
 def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
@@ -287,12 +291,26 @@ def force_close_file(data, cache_comment):
     print('There was an error while writing to the cache file. The file,', filename, 'has had the partial data saved and closed.')
 
 
+def accessible_edges(edges):
+    """
+    Drops the edges whose node could not be resolved.
+    GitHub's GraphQL API answers with a null node (and a partial error) for repositories the
+    token cannot read, e.g. a repository that got deleted, renamed, or made private while the
+    query was running. Those nulls would otherwise crash every counter below.
+    """
+    resolved = [edge for edge in edges if edge.get('node') is not None]
+    skipped = len(edges) - len(resolved)
+    if skipped:
+        print('Skipped', skipped, 'repositor' + ('y' if skipped == 1 else 'ies'), 'returned as null by the GitHub API')
+    return resolved
+
+
 def stars_counter(data):
     """
     Count total stars in repositories owned by me
     """
     total_stars = 0
-    for node in data: total_stars += node['node']['stargazers']['totalCount']
+    for node in accessible_edges(data): total_stars += node['node']['stargazers']['totalCount']
     return total_stars
 
 
