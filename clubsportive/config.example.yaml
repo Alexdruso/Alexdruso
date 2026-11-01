@@ -1,0 +1,62 @@
+# Copy to clubsportive/config.yaml and edit. Times are local wall-clock in `timezone`.
+
+timezone: Europe/Amsterdam
+
+# How long before a session starts the slot is released. Clubsportive appears to open
+# bookings exactly 48h ahead -- verify it with `poolbot watch` before trusting it, and
+# correct this number from what you measure.
+release_offset_hours: 48
+
+match:
+  # Case-insensitive substring/regex match against the slot title (and room name).
+  activity_patterns:
+    - "lap swim"
+    - "zwemmen"
+    - "pool"
+    - "zwembad"
+  # Optional: substring of the club name/location. Empty or absent = any location.
+  location: "Zuidas"
+
+# What you want, best first. A wish is a recurring weekly slot.
+wishes:
+  - name: Tuesday early swim
+    weekday: tue
+    start: "07:00"
+    tolerance_minutes: 30     # accept 06:30-07:30 if 07:00 does not exist that week
+    priority: 1
+
+  - name: Thursday evening swim
+    weekday: thu
+    start: "19:00"
+    tolerance_minutes: 30
+    priority: 2
+
+  - name: Saturday morning swim
+    weekday: sat
+    start: "09:30"
+    tolerance_minutes: 45
+    priority: 3
+
+limits:
+  max_bookings_per_week: 3    # ISO weeks, counted on slot start date
+  one_per_day: true           # never hold two pool slots on the same day
+
+# Timing of the race itself.
+strike:
+  lead_seconds: 2.0           # start firing this long before the computed release moment
+  window_seconds: 90          # keep trying for this long after release
+  attempt_interval_ms: 250    # ~4 requests/second at most
+  max_attempts: 60            # hard cap, whichever comes first
+  prefetch_seconds: 5         # start resolving the slot id this long before release
+  warmup_seconds: 60          # log in + open the TLS connection this long before
+  clocksync_seconds: 45       # sample the server clock this long before
+  join_waitlist_on_full: true # if the API exposes one and the slot filled up anyway
+
+# Dates to skip entirely: single days or ranges.
+blackouts:
+  - "2026-12-24..2027-01-02"
+
+notify:
+  on_success: true
+  on_failure: true
+  attach_ics: true

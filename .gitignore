@@ -1,2 +1,16 @@
 __pycache__/
 *.pyc
+
+# clubsportive pool sniper: secrets, local state, scratch inputs
+clubsportive/.env
+clubsportive/state.json
+clubsportive/config.yaml
+clubsportive/endpoints.toml
+*.apk
+*.xapk
+*.apks
+*.har
+.venv/
+.pytest_cache/
+*.egg-info/
+build/
