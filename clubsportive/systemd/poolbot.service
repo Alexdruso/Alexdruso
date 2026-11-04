@@ -1,0 +1,55 @@
+# poolbot daemon: one long-lived process that sleeps until each release moment.
+#
+# Install (as root), assuming the repo is checked out at /opt/poolbot:
+#   cp systemd/poolbot.service /etc/systemd/system/
+#   # edit User=, the paths, and create /opt/poolbot/.venv
+#   systemctl daemon-reload && systemctl enable --now poolbot
+#   journalctl -fu poolbot
+#
+# For a user service instead, put this in ~/.config/systemd/user/ , drop User=/Group=,
+# run `systemctl --user enable --now poolbot`, and `loginctl enable-linger $USER` so it
+# keeps running when you are not logged in.
+
+[Unit]
+Description=poolbot -- Clubsportive pool slot sniper
+Documentation=file:/opt/poolbot/clubsportive/README.md
+After=network-online.target time-sync.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=poolbot
+Group=poolbot
+WorkingDirectory=/opt/poolbot/clubsportive
+EnvironmentFile=/opt/poolbot/clubsportive/.env
+# Keep the cached auth token with the rest of the service state.
+Environment=XDG_STATE_HOME=/var/lib/poolbot
+StateDirectory=poolbot
+ExecStart=/opt/poolbot/.venv/bin/python -m poolbot daemon
+
+# A strike is time-critical: restart quickly, but do not spin if it is broken.
+Restart=always
+RestartSec=20s
+
+# The clock matters more here than in most services; fail loudly if it is unsynchronised.
+# (Nothing enforces this, but `timedatectl` should show "System clock synchronized: yes".)
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+# config.yaml lives here and state.json is written here.
+ReadWritePaths=/opt/poolbot/clubsportive
+
+[Install]
+WantedBy=multi-user.target

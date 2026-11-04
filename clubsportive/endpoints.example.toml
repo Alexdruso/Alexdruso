@@ -1,0 +1,54 @@
+# API surface of the Clubsportive app (com.mysports.branded.clubsportive), a white-label
+# build of the MySports / Sport Alliance (Magicline) platform.
+#
+# Generate a filled-in copy with:
+#     python -m poolbot.extract_apk /path/to/clubsportive.apk -o endpoints.toml
+# then correct anything the extractor guessed wrong. Nothing here is secret (these are
+# build constants, not credentials), but endpoints.toml is gitignored so your working copy
+# stays private.
+
+base_url = "https://REPLACE-ME"
+
+[headers]
+# "BRANDEDAPP..." constant baked into the app build.
+facility_group = "REPLACE-ME"
+client_type = "APP_V5"
+client_version = "3.68.0"
+user_agent = "okhttp/4.12.0"
+
+[paths]
+# {date_from}/{date_to} (YYYY-MM-DD), {slot_id} and {booking_id} are substituted.
+login = "/v1/login"
+me = "/v1/me"
+slots = "/v1/classes?from={date_from}&to={date_to}"
+book = "/v1/classes/{slot_id}/book"
+cancel = "/v1/bookings/{booking_id}/cancel"
+waitlist = ""            # leave empty if the app has no waiting list for pool slots
+time = ""                # optional cheap GET for clock sync; defaults to `me`
+
+[request]
+# HTTP method per action, in case the real API disagrees with these defaults.
+book = "POST"
+cancel = "POST"
+slots = "GET"
+
+[body]
+# Extra JSON sent with a booking request, e.g. { "slotId": "{slot_id}" }. Values are
+# templated with {slot_id}. Leave empty if the id travels in the path only.
+book = {}
+
+[fields]
+# Candidate JSON key names, tried in order, when normalising a slot object. Add the real
+# spelling at the front of a list once you have seen a live response (`poolbot slots --raw`).
+slots_root = ["slots", "classes", "items", "content", "data", "results"]
+id = ["id", "slotId", "classId", "uuid", "appointmentId"]
+title = ["name", "title", "activityName", "className", "description"]
+start = ["startDateTime", "startDate", "start", "startTime", "from", "dateTimeFrom"]
+end = ["endDateTime", "endDate", "end", "endTime", "to", "dateTimeTo"]
+location = ["facilityName", "studioName", "locationName", "facility", "location", "studio"]
+room = ["roomName", "room", "areaName", "area"]
+capacity = ["capacity", "maxParticipants", "maxCapacity", "slots", "places"]
+booked = ["bookedCount", "currentParticipants", "participants", "bookingCount", "taken"]
+bookable_from = ["bookableFrom", "bookableFromDateTime", "bookingStartDate", "openFrom"]
+state = ["bookingState", "state", "status", "myBookingState"]
+booking_id = ["bookingId", "customerBookingId", "id", "reservationId"]
